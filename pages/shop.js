@@ -7,6 +7,7 @@ const Shop = ()=>{
     const router = useRouter();
     const [loggedIn, setLoggedIn] = useState(false);
     const [data, setData] = useState({user: {username: null}});
+    const [orders, setOrders] = useState([]);
     
     useEffect(async () => {
         const resp = await api.get('/auth/session');
@@ -29,6 +30,14 @@ const Shop = ()=>{
             setProducts(resp.data.data);
         }
     }, []);
+
+    useEffect(async()=>{
+        const resp = await api.get('/product/allorders') ;
+        if(resp){
+            setOrders(resp.data.data);
+        }
+    }, []);
+
 
     const handleSubmit = async (e)=>{
         e.preventDefault();
@@ -127,6 +136,20 @@ const Shop = ()=>{
                </div>
                ))} 
             </div>
+
+            <div className="container">
+                <h3>Orders</h3>
+                {orders && orders.map(p=>(
+                <div className="listitem" key={p._id}>
+                    <img src={p.pimg} className="pimg"/> 
+                    <div>#{p.pcode}</div>
+                    <div className="nps">
+                        <div className="pname">{p.customerId}</div>
+                        <div className="pprice">${p.tprice}</div>
+                    </div>              
+                </div>
+                ))} 
+        </div>
             <style jsx>
                 {`
                     .listitem .pimg{
@@ -134,6 +157,7 @@ const Shop = ()=>{
                         height: 64px;                        
                     }
                     .listitem{
+                        padding: 0.2rem;
                         display: flex;
                         justify-content: space-between;
                         background-color: #ddd;
